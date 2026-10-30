@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saathi — Smart Agriculture Assistant</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-icon">🌱</div><div class="brand-copy"><strong>Saathi</strong><small>Smart Agriculture Companion</small></div></div>
+  <nav class="nav" aria-label="Main navigation">
+    <button class="active" data-page="dashboard"><span>▦</span><span class="nav-label">Dashboard</span></button>
+    <button data-page="advisory"><span>♧</span><span class="nav-label">Crop Advisory</span></button>
+    <button data-page="weather"><span>☀</span><span class="nav-label">Weather</span></button>
+    <button data-page="irrigation"><span>💧</span><span class="nav-label">Irrigation</span></button>
+    <button data-page="guide"><span>🧠</span><span class="nav-label">Farmer AI Guide</span></button>
+  </nav>
+  <div class="side-note"><b>🌿 Farming, made smarter</b>Crop checks, local weather, irrigation planning and a context-aware farmer guide in one place.</div>
+</aside>
+<main>
+<header class="topbar">
+  <div class="topbar-title">Saathi <span class="sub">Farm assistant</span></div>
+  <div class="topright"><span class="pill">● Services status in Dashboard</span><button class="ghost" id="resetAll" type="button">Reset inputs</button></div>
+</header>
+<div class="content">
+<section class="welcome">
+  <div><div class="eyebrow">SMART FARMING</div><h1 id="pageTitle">Saathi Dashboard</h1><p>Turn crop, weather and field observations into practical next steps.</p></div>
+</section>
+<section class="stats">
+  <div class="stat"><div class="stat-icon">🌿</div><div><label>Plant health</label><strong id="statPlant">Not analyzed</strong><small>Latest leaf scan</small></div></div>
+  <div class="stat"><div class="stat-icon">🌦️</div><div><label>Weather</label><strong id="statWeather">Not loaded</strong><small id="statLocation">Waiting for location</small></div></div>
+  <div class="stat"><div class="stat-icon">💧</div><div><label>Soil moisture</label><strong id="statMoisture">50%</strong><small>Simulated input</small></div></div>
+  <div class="stat"><div class="stat-icon">🌾</div><div><label>Crop selected</label><strong id="statCrop">Not set</strong><small>Advisory profile</small></div></div>
+</section>
+
+<section class="section active" id="page-dashboard">
+  <div class="grid">
+    <div class="stack">
+      <article class="card">
+        <div class="card-head"><div><h2>Farm Snapshot</h2><p class="sub">A live summary of your current inputs.</p></div><span class="tag blue">Overview</span></div>
+        <div class="dashboard-kpis">
+          <div class="dash-kpi"><span>🌿</span><small>Last plant result</small><b id="dashPlant">Not analyzed</b></div>
+          <div class="dash-kpi"><span>🌦️</span><small>Weather status</small><b id="dashWeather">Not loaded</b></div>
+          <div class="dash-kpi"><span>💧</span><small>Simulated moisture</small><b id="dashMoisture">50%</b></div>
+          <div class="dash-kpi"><span>🌾</span><small>Selected crop</small><b id="dashCrop">Not set</b></div>
+        </div>
+        <div class="card-head" style="margin-top:22px"><div><h2>Service status</h2><p class="sub">Saathi checks whether its connected services are available.</p></div></div>
+        <div class="advice-list">
+          <div class="advice"><div class="advice-icon">🧠</div><p><b>Plant scanner</b><small id="dashModelStatus">Loading plant scanner…</small></p></div>
+          <div class="advice"><div class="advice-icon">🌐</div><p><b>Weather</b><small id="dashApiStatus">Checking weather service…</small></p></div>
+          <div class="advice"><div class="advice-icon">🧠</div><p><b>Farmer AI</b><small id="dashOllamaStatus">Checking Farmer AI…</small></p></div>
+        </div>
+        <button class="secondary" type="button" id="dashboardPlanBtn" data-ai-action data-ai-target="dashboardAiResult" data-ai-prompt="Create a concise farm action plan for today using the current Saathi crop, weather, soil, plant scan and irrigation context. Clearly state if key context is missing and give only safe, low-cost checks.">✦ Create my farm action plan</button>
+        <div id="dashboardAiResult" class="ai-inline-answer" aria-live="polite">Your personalized action plan will appear here when you request it.</div>
+      </article>
+      <article class="card">
+        <div class="card-head"><div><h2>Recent activity</h2><p class="sub">Your actions in this browser session.</p></div></div>
+        <div id="activityLog" class="advice-list"><div class="advice"><div class="advice-icon">ℹ️</div><p>Saathi is ready.<small>Activity will appear here as you use the tools.</small></p></div></div>
+      </article>
+    </div>
+    <div class="stack">
+      <article class="card">
+        <div class="card-head"><div><h2>What do you need today?</h2><p class="sub">Open a tool and take the next step.</p></div></div>
+        <div class="quick-actions">
+          <button class="secondary" data-goto="advisory">🌿 Scan a plant / crop care</button>
+          <button class="secondary" data-goto="weather">🌦️ Check local weather</button>
+          <button class="secondary" data-goto="irrigation">💧 Plan irrigation</button>
+          <button class="secondary" data-goto="guide">🧠 Ask Farmer AI</button>
+        </div>
+      </article>
+      <article class="card">
+        <div class="card-head"><div><h2>How to get useful results</h2></div></div>
+        <div class="advice-list">
+          <div class="advice"><div class="advice-icon">1</div><p><b>Choose your crop</b><small>Enter soil and weather conditions in Crop Advisory.</small></p></div>
+          <div class="advice"><div class="advice-icon">2</div><p><b>Check local conditions</b><small>Allow location for weather or enter a town manually.</small></p></div>
+          <div class="advice"><div class="advice-icon">3</div><p><b>Review before acting</b><small>Moisture is simulated and image predictions can be wrong. Confirm important decisions locally.</small></p></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="page-advisory">
+  <div class="card-head page-section-heading"><div><h2>Crop Advisory & Plant Health</h2><p class="sub">Scan a leaf, review possible symptoms, then generate crop-specific steps.</p></div><span class="tag blue">Plant AI + advice</span></div>
+  <div class="grid">
+    <div class="stack">
+      <article class="card">
+        <div class="card-head"><div><h2>Plant disease screening</h2><p class="sub">Upload a clear leaf photo or use live webcam scanning.</p></div><span class="tag blue">2-stage image AI</span></div>
+        <div class="upload-zone" id="dropZone">
+          <div id="uploadPrompt"><div class="upload-icon">📷</div><b>Choose a leaf image or drag it here</b><div class="sub">PNG, JPG or WEBP · Clear leaf, good lighting</div></div>
+          <img id="leafPreview" alt="Selected leaf preview" hidden>
+        </div>
+        <input type="file" id="leafInput" accept="image/*" hidden>
+        <div class="upload-actions"><button class="secondary" type="button" id="chooseImage">▧ Choose Image</button><button class="primary" type="button" id="openCamera">◉ Use Webcam</button><button class="ghost" type="button" id="analyzeBtn">✦ Analyze image</button></div>
+        <div class="status" id="modelStatus" role="status" aria-live="polite">Plant scanner is starting…</div>
+        <div class="result-box" id="diseaseResult"><h3>Plant scan result</h3><p class="sub">Select an image or start the webcam to screen a plant.</p></div>
+        <button class="secondary" type="button" data-ai-action data-ai-target="diseaseAiResult" data-ai-prompt="Interpret the most recent plant scan in the current context. Explain what the prediction does and does not establish, give safe observation steps, and describe how to confirm the suspected issue before treatment.">🧠 Get AI next steps for this scan</button>
+        <div id="diseaseAiResult" class="ai-inline-answer" aria-live="polite">Scan a plant first, then request practical follow-up steps.</div>
+        <div class="notice">Image predictions are only a screening aid, not a confirmed diagnosis. Verify symptoms with a local agriculture expert before treatment.</div>
+      </article>
+    </div>
+    <div class="stack">
+      <article class="card">
+        <div class="card-head"><div><h2>Crop and field conditions</h2><p class="sub">Generate practical field checks from crop, soil, temperature and recent observed rainfall.</p></div><span class="tag">Actionable checks</span></div>
+        <div class="formgrid">
+          <div class="field"><label for="crop">Crop</label><select id="crop"><option value="" selected>Not set</option><option value="Tomato">Tomato</option><option value="Rice">Rice</option><option value="Wheat">Wheat</option><option value="Potato">Potato</option><option value="Cotton">Cotton</option><option value="Maize">Maize</option><option value="Pulses">Pulses</option><option value="Other">Other</option></select></div>
+          <div class="field"><label for="soil">Soil type</label><select id="soil"><option value="loamy">Loamy</option><option value="clay">Clay</option><option value="sandy">Sandy</option><option value="silty">Silty</option><option value="unknown">Not sure</option></select></div>
+          <div class="field"><label for="temp">Temperature (°C)</label><input id="temp" type="number" value="28" min="-10" max="60" step="0.1"></div>
+          <div class="field"><label for="rain">Recent rainfall (last hour, mm)</label><input id="rain" type="number" value="0" min="0" max="1000" step="0.1"></div>
+          <div class="field full"><button class="primary" id="getAdvice" type="button" style="width:100%">Generate Crop Advice</button></div>
+        </div>
+        <div id="cropAdvice" class="advice-list" style="margin-top:14px"></div>
+        <button class="secondary" type="button" data-ai-action data-ai-target="cropAiResult" data-ai-prompt="Make a practical crop-care plan based on the current selected crop, soil, temperature, rainfall, latest plant scan and weather context. Start with three actions for today, then list what should be observed and what needs local confirmation. If crop is not set, offer general safe checks and ask which crop is being grown.">🧠 Build an AI crop-care plan</button>
+        <div id="cropAiResult" class="ai-inline-answer" aria-live="polite">Your crop-care plan will appear here.</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="page-weather">
+  <div class="card-head page-section-heading"><div><h2>Local Weather</h2><p class="sub">Current conditions and rainfall context for your location.</p></div><span class="tag blue">Live API</span></div>
+  <div class="grid">
+    <div class="stack">
+      <article class="card">
+        <div class="card-head"><div><h2>Weather conditions</h2><p class="sub">Automatic location when permitted; town search is a fallback.</p></div></div>
+        <div class="formgrid">
+          <div class="field full"><label>Device location</label><div class="sub" id="locationStatus" aria-live="polite">Requesting permission to fetch local weather…</div></div>
+          <div class="field"><label for="city">Enter town or city</label><input id="city" value="" placeholder="e.g. Delhi"></div>
+          <div class="field"><label>&nbsp;</label><button class="secondary" type="button" id="getWeather" style="width:100%">Fetch Weather for Town</button></div>
+        </div>
+        <div class="status" id="weatherStatus">Saathi will request your location and fetch current weather.</div>
+        <div id="weatherDisplay" style="margin-top:12px"><div class="weather-row"><div><div class="sub">Temperature</div><div class="weather-temp">—°C</div><div class="sub">Weather data is not loaded yet</div></div><div style="font-size:40px">🌤️</div></div><div class="weather-metrics"><div class="weather-metric"><small>Humidity</small><b>—</b></div><div class="weather-metric"><small>Rain</small><b>—</b></div><div class="weather-metric"><small>Wind</small><b>—</b></div></div></div>
+        <div class="notice">Weather data describes the selected location, not the soil in your field. Confirm local conditions before watering or spraying.</div>
+      </article>
+    </div>
+    <div class="stack">
+      <article class="card">
+        <div class="card-head"><div><h2>What does this weather mean for my farm?</h2><p class="sub">Qwen turns the available weather readings into a short action checklist.</p></div></div>
+        <div class="advice-list" id="weatherQuickChecks"><div class="advice"><div class="advice-icon">🌦️</div><p><b>Check the forecast</b><small>Once current weather loads, ask the AI to explain possible field impacts.</small></p></div><div class="advice"><div class="advice-icon">🌱</div><p><b>Inspect the field</b><small>Look for standing water, dry root zones and wind damage instead of relying only on an app.</small></p></div></div>
+        <button class="primary" type="button" data-ai-action data-ai-target="weatherAiResult" data-ai-prompt="Act as a practical farm-weather interpreter. Using current Saathi weather, rainfall, crop and soil context, create a today/tomorrow checklist. Cover heat/cold stress, rainfall/drainage, wind and whether weather suggests delaying field work. Do not invent a forecast; if data is missing, say so and give observation-based checks.">✦ Create a weather-based field plan</button>
+        <div id="weatherAiResult" class="ai-inline-answer" aria-live="polite">Load the local weather first, then create a field plan based on the available conditions.</div>
+        <button class="secondary" type="button" data-goto="irrigation" style="width:100%;margin-top:10px">Use this weather in Irrigation →</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="page-irrigation">
+  <div class="card-head page-section-heading"><div><h2>Smart Irrigation Planner</h2><p class="sub">Use simulated moisture and local rainfall to plan what to check before watering.</p></div><span class="tag gold">No sensor required</span></div>
+  <div class="grid">
+    <div class="stack">
+      <article class="card">
+        <div class="card-head"><div><h2>Field water status</h2><p class="sub">Adjust these inputs; the recommendation updates automatically.</p></div></div>
+        <div class="field"><label for="moisture">Simulated soil moisture: <b id="moistureLabel">50%</b></label><input id="moisture" type="range" min="0" max="100" value="50" style="width:100%;accent-color:#16a765"></div>
+        <div class="formgrid" style="margin-top:14px">
+          <div class="field"><label for="irrigationRain">Forecast rain (mm, next 24h)</label><input id="irrigationRain" type="number" min="0" max="500" value="0" step="0.1"></div>
+          <div class="field"><label for="stage">Crop stage</label><select id="stage"><option value="seedling">Seedling</option><option value="growth" selected>Vegetative growth</option><option value="flowering">Flowering / fruiting</option><option value="mature">Mature</option></select></div>
+        </div>
+        <button class="primary" id="irrigateBtn" type="button" style="width:100%;margin-top:13px">Update Irrigation Recommendation</button>
+        <div id="irrigationResult" class="result-box" aria-live="polite"></div>
+        <div class="notice">Moisture is simulated, not measured by a sensor. Use a real soil check before deciding how much to irrigate.</div>
+      </article>
+    </div>
+    <div class="stack">
+      <article class="card">
+        <div class="card-head"><div><h2>AI irrigation coach</h2><p class="sub">Qwen explains the trade-offs using crop stage, forecast rain, soil and weather.</p></div></div>
+        <div class="advice-list"><div class="advice"><div class="advice-icon">💧</div><p><b>Before watering</b><small>Check moisture in the crop's root zone, not just the soil surface.</small></p></div><div class="advice"><div class="advice-icon">🌧️</div><p><b>After rainfall</b><small>Recheck for waterlogging and allow for forecast rain before irrigating.</small></p></div><div class="advice"><div class="advice-icon">🌾</div><p><b>Match the crop stage</b><small>Young plants and flowering/fruiting crops can have different water needs.</small></p></div></div>
+        <button class="primary" type="button" data-ai-action data-ai-target="irrigationAiResult" data-ai-prompt="Act as an irrigation coach. Use the current crop, soil, crop stage, simulated soil moisture, recent rainfall, next-24-hour forecast rain and weather context to propose a safe decision checklist. State whether the scenario suggests inspect, monitor, or consider irrigation; don't invent watering quantities. Explicitly flag that soil moisture is simulated and tell the user what to inspect in the field.">✦ Ask AI to review my irrigation plan</button>
+        <div id="irrigationAiResult" class="ai-inline-answer" aria-live="polite">Change the moisture and crop stage above, then request a tailored irrigation checklist.</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="page-guide">
+  <div class="grid">
+    <div class="stack">
+      <article class="card">
+        <div class="card-head"><div><h2>Saathi Farmer AI Guide</h2><p class="sub">Ask questions or use the AI action buttons across Crop Advisory, Weather and Irrigation.</p></div><span class="tag blue">Farmer Guide</span></div>
+        <div class="ai-status-panel"><span class="ai-status-dot" id="ollamaStatusDot"></span><div><b id="ollamaStatusTitle">Checking Farmer AI…</b><div class="sub" id="ollamaStatusText">Checking whether the guide is available.</div></div><button class="ghost" id="refreshOllama" type="button">Refresh status</button></div>
+        <div class="prompt-chips" aria-label="Suggested farmer actions">
+          <button class="secondary" type="button" data-guide-prompt="Create a practical 5-point farm checklist for today using my current Saathi context. Start with what I can inspect myself.">Daily farm checklist</button>
+          <button class="secondary" type="button" data-guide-prompt="Review the crop, weather and moisture context and tell me what to check before watering.">Irrigation check</button>
+          <button class="secondary" type="button" data-guide-prompt="My latest plant scan may indicate a problem. Give safe steps to verify the symptoms before treatment.">Plant scan follow-up</button>
+          <button class="secondary" type="button" data-guide-prompt="Recommend low-cost, sustainable actions for my selected crop and current conditions.">Low-cost actions</button>
+        </div>
+        <div id="guideChat" class="guide-chat" role="log" aria-live="polite"><div class="guide-message assistant"><b>Saathi</b><p>Namaste! I can help make checklists, explain weather and irrigation trade-offs, and suggest safe ways to investigate plant symptoms. Use one of the action buttons or ask a question.</p></div></div>
+        <form id="guideForm" class="guide-compose"><label class="sr-only" for="guideQuestion">Ask Saathi Farmer AI</label><textarea id="guideQuestion" rows="3" maxlength="1800" placeholder="Ask about a crop, symptom, forecast or field decision…" required></textarea><div class="guide-compose-footer"><small>Advice is generated on this device when the local guide is available. Verify important decisions locally.</small><button class="primary" id="guideSend" type="submit">Ask Saathi ↗</button></div></form>
+        <div class="notice">Plant predictions and demo moisture values are not verified diagnoses or sensor measurements.</div>
+      </article>
+    </div>
+    <div class="stack">
+      <article class="card"><div class="card-head"><div><h2>Current farm context</h2><p class="sub">These values are shared with the AI to make its advice more relevant.</p></div></div><div id="guideContextPreview" class="context-preview"><div class="advice"><div class="advice-icon">🌱</div><p>Farm context will appear here.</p></div></div><button class="secondary" id="refreshGuideContext" type="button" style="width:100%;margin-top:12px">Refresh context</button></article>
+    </div>
+  </div>
+</section>
+</div>
+</main>
+</div>
+<div id="cameraModal" role="dialog" aria-modal="true" aria-label="Webcam plant scanner">
+  <div class="modal"><div class="modal-head"><h2>Live plant scanner</h2><button class="ghost" id="closeCamera" type="button">✕ Close</button></div><p class="sub">Allow camera access and show a potted plant in good light. Saathi checks for a plant before running disease models.</p><video id="cameraVideo" autoplay playsinline muted></video><div id="cameraLiveResult" class="result-box" role="status" aria-live="polite"><h3>Preparing scanner…</h3><p class="sub">Plant models are loading.</p></div><div class="modal-actions"><button class="secondary" id="capturePhoto" type="button">Save current frame</button><button class="ghost" id="switchCamera" type="button">Switch camera</button></div><div id="cameraStatus" class="status"></div></div>
+</div>
+<div class="model-config-hidden" hidden aria-hidden="true"><input id="healthUrl" type="hidden" value="https://teachablemachine.withgoogle.com/models/eySRbLEhO/"><input id="diseaseUrl" type="hidden" value="https://teachablemachine.withgoogle.com/models/iiypUy-Qu/"><input id="healthyClass" type="hidden" value="Healthy"><input id="unhealthyClass" type="hidden" value="Unhealthy"><button id="loadModels" type="button" hidden>Load models</button><div id="setupStatus" hidden></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.3/dist/teachablemachine-image.min.js"></script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
